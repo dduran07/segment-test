@@ -30,6 +30,46 @@
   analytics.page();
   }}();
 </script>
+<script>
+    analytics.identify('user_pro_01', {
+  name: 'Analista Experto',
+  email: 'test@example.com',
+  plan: 'Master'
+</script>
+<script>
+    // Esperamos a que el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+  
+  document.body.addEventListener('click', (event) => {
+    // Buscamos si el elemento clickeado (o su padre) tiene el atributo 'data-track'
+    const target = event.target.closest('[data-track]');
+    
+    if (target) {
+      const eventName = target.getAttribute('data-track'); // Nombre del evento
+      let properties = {};
+
+      // Intentamos capturar propiedades extra desde un atributo 'data-props' (formato JSON)
+      try {
+        const rawProps = target.getAttribute('data-props');
+        if (rawProps) properties = JSON.parse(rawProps);
+      } catch (e) {
+        console.error("Error al parsear data-props:", e);
+      }
+
+      // Añadimos metadata automática (clase, ID, texto del botón)
+      properties.element_text = target.innerText.trim();
+      properties.element_id = target.id || 'n/a';
+
+      // ¡Disparamos a Segment!
+      if (window.analytics) {
+        window.analytics.track(eventName, properties);
+        console.log(`✅ Segment Track: ${eventName}`, properties);
+      }
+    }
+  });
+});
+});
+  </script>
 
   </head>
 
